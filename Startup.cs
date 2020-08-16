@@ -17,6 +17,7 @@ namespace car_webapi
 {
     public class Startup
     {
+        readonly string myPolicy = "_myPolicy";
         public Startup(IConfiguration configuration)
         {
             Configuration = configuration;
@@ -31,6 +32,15 @@ namespace car_webapi
             {
                 options.UseSqlServer(Configuration.GetConnectionString("CarConfigurator"));
             });
+
+            services.AddCors(options =>
+            {
+                options.AddPolicy(name: myPolicy, builder =>
+                {
+                    builder.AllowAnyHeader().AllowAnyMethod().AllowAnyOrigin();
+                });
+            });
+
             services.AddControllers();
         }
 
@@ -45,6 +55,8 @@ namespace car_webapi
             //app.UseHttpsRedirection();
 
             app.UseRouting();
+
+            app.UseCors(myPolicy);
 
             app.UseAuthorization();
 
